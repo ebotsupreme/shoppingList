@@ -14,8 +14,14 @@ class ViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItem))
         title = "Shopping List"
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(clearList))
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareList)),
+            UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItem))
+        ]
+        
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -42,13 +48,25 @@ class ViewController: UITableViewController {
         present(ac, animated: true)
     }
     
+    @objc func clearList() {
+        shoppingList = []
+        tableView.reloadData()
+    }
+    
     func submit(_ item: String) {
         shoppingList.insert(item, at: 0)
         
         let index = IndexPath(row: 0, section: 0)
         tableView.insertRows(at: [index], with: .automatic)
     }
-
+    
+    @objc func shareList() {
+        let list = shoppingList.joined(separator: ", ")
+        let avc = UIActivityViewController(activityItems: ["Shopping List: \(list)."], applicationActivities: nil)
+        
+        avc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+        present(avc, animated: true)
+    }
 
 }
 
